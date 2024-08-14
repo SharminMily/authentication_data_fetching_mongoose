@@ -2,20 +2,16 @@
 import { useState } from "react";
 
 export default function Register() {
-   const [username, setusername] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setpassword] = useState("")
-  const [gender, setGender] = useState("")
-
-  const [info, setInfo] = useState({username: "", email: "email", password: "password"})
-
+  
+  const [info, setInfo] = useState({username: "", email: "", password: ""});
   const [error, setError] = useState("");
+  const [panding, setPanding] = useState(false); 
 
   // const handleSubmit = async (e) => {
   //   e.preventDefault()    
   //   if (!username || !email || !password || !gender) {
   //     setError("All fields are necessary.");
-  //     return;
+     
   //   }try {
   //       const respons = await fetch('api/users', {           
   //        method: "POST",
@@ -40,15 +36,40 @@ export default function Register() {
   function handleInput(e){
     setInfo((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
+  console.log(info)
 
-  const handleSubmit = (e) => {
-    e.preventdefult();
+  async function handleSubmit (e) {
+    e.preventDefault(); 
       if(!info.username || !info.email || !info.password){
         setError("Must provide all the credentails.")
+        
+      }
+      try {
+        setPanding(true)
+        const res = await fetch('api/users', {           
+          method: "POST",
+         headers: {
+           "Content-Type": "application/json",
+         },
+         body: JSON.stringify(info),
+        });
+        if(res.ok){
+          setPanding(false);
+          const from = e.target;
+          from.reset();
+          console.log("use registered")
+        } else{
+          const errorData = await res.json();
+          setError(errorData.message)
+          setPanding(false);
+        }
+
+      } catch (error) {
+        setPanding(false);
+        setError(errorData.message)
       }
   }
-  console.log({info})
-
+  
 
 
   return (
@@ -74,7 +95,8 @@ export default function Register() {
             name= "password"
             onChange={(e) => handleInput(e)} className="border-blue-800 border px-4 py-2 rounded-md" placeholder="password"   />
           </div>
-
+              
+              {error && <span className="massage">{error}</span>}
         
           <div className="py-2 rounded-md bg-pink-800 text-center">
             <input type="submit" value="Register" className="text-white" />
