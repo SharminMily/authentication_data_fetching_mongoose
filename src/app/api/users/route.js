@@ -1,28 +1,22 @@
 import { connectMongoDB } from "@/app/utils/dbConnect/dbConnect";
-import User from "@/app/utils/schema/userSchema";
 import { NextResponse } from "next/server";
-import bcrypt from "bcrypt";
+import bcrypt from "bcrypt"
+import User from "@/app/utils/schema/userSchema";
 
-// import { connect }  from "@/app/utils/dbConnect/dbConnect";
 export async function POST(req) {
-    
     try {
         await connectMongoDB();
-        const {username, email,  password} = await req.json()
-        const exists = await User.findOne({$or: [{ email }, { username }]});
-        
-        if(exists){
-            return NextResponse.json({ message: 'user register ' }, {status: 201})
-        }
-        const hashedPassword = await bcrypt.hash(password, 10) 
-
-        await User.create({ username, email, password, hashedPassword });
-        return NextResponse.json({ message: 'user register' }, {status: 201})       
-        
+         const {username, email, password} = await req.json();
+         const exists = await User.findOne({$or: [{email}, {username}]})
+         if(exists){
+            return NextResponse.json({message: "Username or email already exists."}, {status: 500})
+         }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await User.create({ username, email, password:hashedPassword })
+        return NextResponse.json({ message:"User registered." }, {status:201});
+        // console.log({username, email, password});
     } catch (error) {
-        return NextResponse.json(
-            { message: "An error occurred while login the user"}, {status: 500} 
-        )
+        console.log("Error while registering user.", error);
+        return NextResponse.json({message: "Error occured while registered"}, {status: 500})
     }
-       
 }

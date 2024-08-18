@@ -1,11 +1,13 @@
 "use client"
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Register() {
+  const router = useRouter();
   
-  const [info, setInfo] = useState({username: "", email: "", password: ""});
+  const [info, setInfo] = useState({ username: "", email: "", password: "" });
   const [error, setError] = useState("");
-  const [panding, setPanding] = useState(false); 
+  const [pending, setPending] = useState(false); 
 
   // const handleSubmit = async (e) => {
   //   e.preventDefault()    
@@ -40,37 +42,36 @@ export default function Register() {
 
   async function handleSubmit (e) {
     e.preventDefault(); 
-      if(!info.username || !info.email || !info.password){
-        setError("Must provide all the credentails.")
-        
-      }
-      try {
-        setPanding(true)
-        const res = await fetch('api/users', {           
+    if(!info.username || !info.email || !info.password){
+      setError("Must provide all the credentials")
+    }
+    try {
+      setPending(true);
+      const res = await fetch("api/users", 
+        {
           method: "POST",
-         headers: {
-           "Content-Type": "application/json",
-         },
-         body: JSON.stringify(info),
-        });
-        if(res.ok){
-          setPanding(false);
-          const from = e.target;
-          from.reset();
-          console.log("use registered")
-        } else{
-          const errorData = await res.json();
-          setError(errorData.message)
-          setPanding(false);
-        }
-
-      } catch (error) {
-        setPanding(false);
-        setError(errorData.message)
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(info)        
+      })
+      if(res.ok){
+        setPending(false);
+        const form = e.target;
+        form.reset();
+        router.push("/login")
+        console.log("user registred")
+      } else{
+        const errorData = await res.json() 
+        console.log(errorData.message);
+        setPending(false)
       }
+    } catch (error) {
+      setPending(false)
+      setError("Something went wrong")
+    }
   }
   
-
 
   return (
     <>
@@ -96,11 +97,15 @@ export default function Register() {
             onChange={(e) => handleInput(e)} className="border-blue-800 border px-4 py-2 rounded-md" placeholder="password"   />
           </div>
               
-              {error && <span className="massage">{error}</span>}
+              {error && <span className="massage text-red-600">{error}</span>}
         
           <div className="py-2 rounded-md bg-pink-800 text-center">
-            <input type="submit" value="Register" className="text-white" />
-            </div>     
+            {/* <input type="submit" value="Register" className="text-white" /> */}
+            <button className="primary-btn change-btn text-white" disabled={pending? true: false}>{pending? "Registering" : "Register"}</button>
+            </div>  
+{/*          
+        <p className="text-center">Don't have an account? <Link href="/register">Register</Link> </p>
+            </div>      */}
          
         </form>
       </div>
