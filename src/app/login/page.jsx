@@ -67,7 +67,7 @@ export default function Login() {
               {error && <span className="massage text-red-600">{error}</span>}
         
           <div className="py-2 rounded-md bg-pink-800 text-center">
-            {/* <input type="submit" value="Register" className="text-white" /> */}
+       
 
             <button className="primary-btn change-btn text-white" disabled={pending? true: false}>{pending? "logging" : "login"}</button>
             </div>  

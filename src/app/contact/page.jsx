@@ -1,63 +1,34 @@
-// "use client"
-// import { useState } from "react";
-// export default function Contact() {
-//    const [name, setName] = useState("")
-//   const [email, setEmail] = useState("")
-//   const [phone, setPhone] = useState("")
-//   const [gender, setGender] = useState("")
+"use client"
+import { notFound } from "next/navigation";
 
-//   const handleSubmit = async (e) => {
-//     e.preventDefault()    
-//     if (!name || !email || !phone || !gender) {
-//       setError("All fields are necessary.");
-//       return;
-//     }try {
-//         const respons = await fetch('api/users', {           
-//          method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//         body: JSON.stringify({name, email, phone, gender}),
-//       });
-//         if(respons.ok){
-//           const form = e.target;
-//           form.reset()
-//           // router.push("/");
-//         } else{
-//           console.log("failed")
-//         }    
-//             // router.push('/view-users')        
-//     } catch (error) {
-//         alert( error)
-//     }
-//   }
-//   return (
-//     <>
-//       <div className="flex justify-center p-10">
-//         <form onSubmit={handleSubmit} className="border border-blue-500 flex flex-col p-10">          
-//           <div className="py-2 ">
-//             <input type="text" value={name} onChange={(e) => setName(e.target.value)} required className="border-blue-800 border px-4 py-2 rounded-md" name="" placeholder="Name" id="" />
-//           </div>
 
-//           <div className="py-2">
-//             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required  name="" placeholder="Email" className="border-blue-800 border px-4 py-2 rounded-md" id="" />
-//           </div>
+async function getData() {
+    const res = await fetch("http://localhost:3000/api/usersGet", {cache: "no-store"});
 
-//           <div className="">
-//             <input type="number" value={phone} onChange={(e) => setPhone(e.target.value)} required  className="border-blue-800 border px-4 py-2 rounded-md" placeholder="Phone"  name="" id="" />
-//           </div>
+    if(!res.ok) return notFound();
+    return res.json()
+}
 
-//           <div className="py-2">
-//             <input type="text" value={gender} onChange={(e) => setGender(e.target.value)}  required className="border-blue-800 border px-4 py-2 rounded-md" placeholder="Gender"  name="" id="" />
-//           </div>     
+const page = async() => {
 
-//           <div className="py-2 rounded-md bg-green-600 text-center">
-//             <input type="submit" value="save user" className="text-white" />
-//             </div>     
-         
-//         </form>
-//       </div>
-//     </>
-//   );
-// }
+    const data = await getData();
+    console.log(data);
 
+    return (
+        <div>
+            <p className="m-10">hello</p>
+            {
+                data.map((user) => <div key={user.id} className="">
+                <div className=""> 
+                <p className="text-center text-lg">{user.email}</p>
+               <br></br>
+                <p className="text-center text-xl">{user.password}</p>
+               
+                </div>
+                </div> )
+            }
+        </div>
+    );
+};
+
+export default page;
